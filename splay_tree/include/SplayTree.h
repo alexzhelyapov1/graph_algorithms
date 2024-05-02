@@ -25,15 +25,43 @@ class Tree
 
     void Insert(T value)
     {
-        if (root_ == nullptr) {
-            root_ = new Node<T>(value);
+        Node<T>* pre_insert = nullptr;
+        Node<T>* insert = root_;
+
+        while (insert != nullptr) {
+            pre_insert = insert;
+
+            if (value > insert->value_) {
+                insert = insert->right_node_;
+            }
+            else {
+                insert = insert->left_node_;
+            }
         }
 
+        std::cout << "Place to insert: ";
+        if (pre_insert == nullptr) std::cout << "NULLPTR\n";
+        else std::cout << pre_insert->value_ << std::endl;
+
+        Node<T>* new_node = new Node<T>(value);
+        new_node->predessor_node_ = pre_insert;
+
+        if (pre_insert == nullptr) {
+            root_ = new_node;
+        }
+        else if (value > pre_insert->value_) {
+            pre_insert->right_node_ = new_node;
+        }
+        else {
+            pre_insert->left_node_ = new_node;
+        }
+
+        root_ = new_node->Splay();
     }
 
     Node<T>* Find(T value);
     void Delete(T value);
-    
+
 };
 
 
@@ -75,30 +103,8 @@ class Node
     Node<T>* RightRotate();
     // Node<T>* FindInsertPlace(T value);
     Node<T>* Splay();
-
-    Node<T>* Zig(Node<T>* predessor_node, Node<T>* x_node)
-    {
-        // if (predessor_node != root) {
-        //     throw std::runtime_error("ERROR! Zig with not root predessor");
-        // }
-
-        if (predessor_node->left_node_ == x_node) {
-            return predessor_node->RightRotate();
-        }
-        else if (predessor_node->right_node_ == x_node) {
-            return predessor_node->LeftRotate();
-        }
-        else {
-            UNREACHABLE
-        }
-    }
-
-    // Node<T>* ZigZig()
-    // {
-    //     if (this == predessor_node_->left_node_) {
-    //         if ()
-    //     }
-    // }
+    // std::pair<Node<T>*, Node<T>*> Split()
+    Node<T>* FindNext(T data);
 
     void GraphVizPrint(std::ofstream& out) {       
         if (left_node_ != nullptr) {
@@ -144,6 +150,9 @@ Node<T>* Node<T>::Splay()
     Node<T>* tmp = this;
 
     while (predessor_node_ != nullptr) {
+        p_node = predessor_node_;
+        g_node = predessor_node_->predessor_node_;
+        
         if (this == predessor_node_->left_node_) {
             if (predessor_node_->predessor_node_ == nullptr) {
                 Node<T>* res = predessor_node_->RightRotate();
@@ -201,6 +210,8 @@ Node<T>* Node<T>::Splay()
             }
         }
     }
+
+    return this;
 }
 
 

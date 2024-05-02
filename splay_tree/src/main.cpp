@@ -11,10 +11,17 @@ int main() {
     Node<int> c(7, &a);
     Node<int> d(8, &b);
 
-    // root = a.RightRotate();
-    root = d.Splay();
+    Tree<int> my_tree;
+    my_tree.Insert(3);
+    my_tree.Insert(7);
+    my_tree.Insert(6);
+    my_tree.Insert(4);
+    // my_tree.Insert(8);
 
-    std::ofstream out("/Users/alex_mac/Desktop/mipt/graph_algorithms/splay_tree/GV.txt");
+    // root = a.RightRotate();
+    // root = d.Splay();
+
+    std::ofstream out("/home/alex/graph_algorithms/splay_tree/GV.txt");
     if (!out.is_open()) {
         throw std::runtime_error("ERROR! Can't open file\n");
     }
@@ -23,7 +30,7 @@ int main() {
 
 
     // root->GraphVizPrint(out);
-    root->GraphVizPrint(out);
+    my_tree.root_->GraphVizPrint(out);
 
     out << "}";
     out.close();
