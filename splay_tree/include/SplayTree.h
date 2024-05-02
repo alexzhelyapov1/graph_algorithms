@@ -20,14 +20,14 @@ class Tree
   public:
     Node<T>* root_ = nullptr;
 
-    std::pair(Node<T>*, Node<T>*) Split(T value)
-    {
-        if (root_ == nullptr) {
-            return std::pair(nullptr, nullptr);
-        }
+    // std::pair(Node<T>*, Node<T>*) Split(T value)
+    // {
+    //     if (root_ == nullptr) {
+    //         return std::pair(nullptr, nullptr);
+    //     }
 
         
-    }
+    // }
 
     void Insert(T value)
     {
@@ -70,12 +70,14 @@ class Node
 
     Node<T>* LeftRotate();
     Node<T>* RightRotate();
+    // Node<T>* FindInsertPlace(T value);
+    Node<T>* Splay();
 
-    Node<T>* Zig(Node<T>* predessor_node, Node<T>* x_node, Node<T>* root)
+    Node<T>* Zig(Node<T>* predessor_node, Node<T>* x_node)
     {
-        if (predessor_node != root) {
-            throw std::runtime_error("ERROR! Zig with not root predessor");
-        }
+        // if (predessor_node != root) {
+        //     throw std::runtime_error("ERROR! Zig with not root predessor");
+        // }
 
         if (predessor_node->left_node_ == x_node) {
             return predessor_node->RightRotate();
@@ -87,6 +89,13 @@ class Node
             UNREACHABLE
         }
     }
+
+    // Node<T>* ZigZig()
+    // {
+    //     if (this == predessor_node_->left_node_) {
+    //         if ()
+    //     }
+    // }
 
     void GraphVizPrint(std::ofstream& out) {       
         if (left_node_ != nullptr) {
@@ -106,6 +115,84 @@ class Node
         }
     }
 };
+
+
+// template <typename T>
+// Node<T>* Node<T>::FindInsertPlace(T value)
+// {
+//     if (value_ >= value) {
+//         if (right_node_ == nullptr) {
+//             return this;
+//         }
+//         return right_node_->FindInsertPlace(value);
+//     }
+
+//     else {
+//         if (left_node_ == nullptr) {
+//             return this;
+//         }
+//     }
+// }
+
+
+template <typename T>
+Node<T>* Node<T>::Splay()
+{
+    Node<T>* tmp = this;
+
+    while (predessor_node_ != nullptr) {
+        if (this == predessor_node_->left_node_) {
+            if (predessor_node_->predessor_node_ == nullptr) {
+                Node<T>* res = predessor_node_->RightRotate();
+                if (res != this) {
+                    std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
+                }
+                return res;
+            }
+            else if (predessor_node_ == predessor_node_->predessor_node_->left_node_) {
+                predessor_node_->predessor_node_->RightRotate();
+                Node<T>* res = predessor_node_->RightRotate();
+                if (res != this) {
+                    std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
+                }
+                return res;
+            }
+            else {
+                predessor_node_->RightRotate();
+                Node<T>* res = predessor_node_->LeftRotate();
+                if (res != this) {
+                    std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
+                }
+                return res;
+            }
+        }
+        else {
+            if (predessor_node_->predessor_node_ == nullptr) {
+                Node<T>* res = predessor_node_->LeftRotate();
+                if (res != this) {
+                    std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
+                }
+                return res;
+            }
+            else if (predessor_node_ == predessor_node_->predessor_node_->right_node_) {
+                predessor_node_->predessor_node_->LeftRotate();
+                Node<T>* res = predessor_node_->LeftRotate();
+                if (res != this) {
+                    std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
+                }
+                return res;
+            }
+            else {
+                predessor_node_->LeftRotate();
+                Node<T>* res = predessor_node_->RightRotate();
+                if (res != this) {
+                    std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
+                }
+                return res;
+            }
+        }
+    }
+}
 
 
 template <typename T>
@@ -144,31 +231,30 @@ Node<T>* Node<T>::LeftRotate()
 template <typename T>
 Node<T>* Node<T>::RightRotate()
 {
-    if (left_node_ == nullptr) {
+    if (predessor_node_ == nullptr) {
         return this;
     }
 
-    Node<T>* root_left_right = left_node_->right_node_;
-    Node<T>* new_root = left_node_;
+    predessor_node_->left_node_ = right_node_;
+    right_node_ = predessor_node_;
 
-    new_root->right_node_ = this;
+    Node<T>* g_node = predessor_node_->predessor_node_;
 
-    if (predessor_node_ != nullptr) {
-        if (predessor_node_->right_node_ == this) {
-            predessor_node_->right_node_ = new_root;
+    if (g_node != nullptr) {
+        if (g_node->right_node_ == predessor_node_) {
+            g_node->right_node_ = this;
         }
         else {
-            predessor_node_->left_node_ = new_root;
+            g_node->left_node_ = this;
         }
     }
 
-    new_root->predessor_node_ = predessor_node_;
-    predessor_node_ = new_root;
-    left_node_ = root_left_right;
-
-    if (left_node_ != nullptr) {
-        left_node_->predessor_node_ = this;
+    if (right_node_ != nullptr) {
+        right_node_->predessor_node_ = predessor_node_;
     }
 
-    return new_root;
+    predessor_node_->predessor_node_ = this;
+    predessor_node_ = g_node;
+
+    return this;
 }
