@@ -16,7 +16,7 @@ int main() {
     my_tree.Insert(7);
     my_tree.Insert(6);
     my_tree.Insert(4);
-    // my_tree.Insert(8);
+    my_tree.Insert(8);
 
     // root = a.RightRotate();
     // root = d.Splay();

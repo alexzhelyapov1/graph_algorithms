@@ -1,10 +1,12 @@
 digraph graphname {
+8 -> 4
 4 -> 3
 3 -> L_NULL3
 3 -> R_NULL3
-4 -> 6
+4 -> 7
+7 -> 6
 6 -> L_NULL6
-6 -> 7
-7 -> L_NULL7
+6 -> R_NULL6
 7 -> R_NULL7
+8 -> R_NULL8
 }

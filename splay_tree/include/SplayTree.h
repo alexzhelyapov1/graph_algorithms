@@ -106,7 +106,7 @@ class Node
     // std::pair<Node<T>*, Node<T>*> Split()
     Node<T>* FindNext(T data);
 
-    void GraphVizPrint(std::ofstream& out) {       
+    void GraphVizPrint(std::ofstream& out) {
         if (left_node_ != nullptr) {
             out << value_ << " -> " << left_node_->value_ << std::endl;
             left_node_->GraphVizPrint(out);
@@ -147,69 +147,42 @@ class Node
 template <typename T>
 Node<T>* Node<T>::Splay()
 {
-    Node<T>* tmp = this;
-
     while (predessor_node_ != nullptr) {
-        p_node = predessor_node_;
-        g_node = predessor_node_->predessor_node_;
-        
-        if (this == predessor_node_->left_node_) {
             if (predessor_node_->predessor_node_ == nullptr) {
-                Node<T>* res = predessor_node_->RightRotate();
-                if (res != this) {
-                    std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
-                    UNREACHABLE
+
+                if (this == predessor_node_->left_node_) {
+                    predessor_node_->RightRotate();
+                } else {
+                    predessor_node_->LeftRotate();
                 }
-                return res;
-            }
-            else if (predessor_node_ == predessor_node_->predessor_node_->left_node_) {
-                predessor_node_->predessor_node_->RightRotate();
-                Node<T>* res = predessor_node_->RightRotate();
-                if (res != this) {
-                    std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
-                    UNREACHABLE
+            } else {
+                // g_node = predessor_node_->predessor_node_;
+                // p_node = predessor_node_;
+
+                // Zig-Zig
+                if (this == predessor_node_->left_node_ && predessor_node_ == predessor_node_->predessor_node_->left_node_) {
+
+                    predessor_node_->predessor_node_->RightRotate();
+                    predessor_node_->RightRotate();
+
+                } else if (this == predessor_node_->right_node_ && predessor_node_ == predessor_node_->predessor_node_->right_node_) {
+
+                    predessor_node_->predessor_node_->LeftRotate();
+                    predessor_node_->LeftRotate();
                 }
-                return res;
-            }
-            else {
-                predessor_node_->RightRotate();
-                Node<T>* res = predessor_node_->LeftRotate();
-                if (res != this) {
-                    std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
-                    UNREACHABLE
+                // Zig-Zag step.
+                else if (this == predessor_node_->right_node_ && predessor_node_ == predessor_node_->predessor_node_->left_node_) {
+
+                    predessor_node_->LeftRotate();
+                    predessor_node_->RightRotate();
+
+                } else if (this == predessor_node_->left_node_ && predessor_node_ == predessor_node_->predessor_node_->right_node_) {
+
+                    predessor_node_->RightRotate();
+                    predessor_node_->LeftRotate();
                 }
-                return res;
             }
         }
-        else {
-            if (predessor_node_->predessor_node_ == nullptr) {
-                Node<T>* res = predessor_node_->LeftRotate();
-                if (res != this) {
-                    std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
-                    UNREACHABLE
-                }
-                return res;
-            }
-            else if (predessor_node_ == predessor_node_->predessor_node_->right_node_) {
-                predessor_node_->predessor_node_->LeftRotate();
-                Node<T>* res = predessor_node_->LeftRotate();
-                if (res != this) {
-                    std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
-                    UNREACHABLE
-                }
-                return res;
-            }
-            else {
-                predessor_node_->LeftRotate();
-                Node<T>* res = predessor_node_->RightRotate();
-                if (res != this) {
-                    std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
-                    UNREACHABLE
-                }
-                return res;
-            }
-        }
-    }
 
     return this;
 }
