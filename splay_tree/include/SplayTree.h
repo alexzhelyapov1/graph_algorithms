@@ -20,14 +20,7 @@ class Tree
   public:
     Node<T>* root_ = nullptr;
 
-    // std::pair(Node<T>*, Node<T>*) Split(T value)
-    // {
-    //     if (root_ == nullptr) {
-    //         return std::pair(nullptr, nullptr);
-    //     }
-
-        
-    // }
+    // std::pair(Node<T>*, Node<T>*) Split(T value);
 
     void Insert(T value)
     {
@@ -42,6 +35,16 @@ class Tree
     
 };
 
+
+// template <typename T>
+// std::pair(Node<T>*, Node<T>*) Tree<T>Split(T value);
+// {
+//     if (root_ == nullptr) {
+//         return std::pair(nullptr, nullptr);
+//     }
+
+    
+// }
 
 
 template <typename T>
@@ -146,6 +149,7 @@ Node<T>* Node<T>::Splay()
                 Node<T>* res = predessor_node_->RightRotate();
                 if (res != this) {
                     std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
+                    UNREACHABLE
                 }
                 return res;
             }
@@ -154,6 +158,7 @@ Node<T>* Node<T>::Splay()
                 Node<T>* res = predessor_node_->RightRotate();
                 if (res != this) {
                     std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
+                    UNREACHABLE
                 }
                 return res;
             }
@@ -162,6 +167,7 @@ Node<T>* Node<T>::Splay()
                 Node<T>* res = predessor_node_->LeftRotate();
                 if (res != this) {
                     std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
+                    UNREACHABLE
                 }
                 return res;
             }
@@ -171,6 +177,7 @@ Node<T>* Node<T>::Splay()
                 Node<T>* res = predessor_node_->LeftRotate();
                 if (res != this) {
                     std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
+                    UNREACHABLE
                 }
                 return res;
             }
@@ -179,6 +186,7 @@ Node<T>* Node<T>::Splay()
                 Node<T>* res = predessor_node_->LeftRotate();
                 if (res != this) {
                     std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
+                    UNREACHABLE
                 }
                 return res;
             }
@@ -187,6 +195,7 @@ Node<T>* Node<T>::Splay()
                 Node<T>* res = predessor_node_->RightRotate();
                 if (res != this) {
                     std::cout << "Error splay! " << tmp->value_ << " " << res->value_ << std::endl;
+                    UNREACHABLE
                 }
                 return res;
             }

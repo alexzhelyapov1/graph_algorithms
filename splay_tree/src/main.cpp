@@ -11,9 +11,9 @@ int main() {
     Node<int> c(7, &a);
     Node<int> d(8, &b);
 
-    root = b.RightRotate();
+    root = b.Splay();
 
-    std::ofstream out("/home/alex/graph_algorithms/splay_tree/GV.txt");
+    std::ofstream out("/Users/alex_mac/Desktop/mipt/graph_algorithms/splay_tree/GV.txt");
     if (!out.is_open()) {
         throw std::runtime_error("ERROR! Can't open file\n");
     }
