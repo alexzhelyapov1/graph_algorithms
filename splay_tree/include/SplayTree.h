@@ -1,17 +1,20 @@
 #pragma once
 #include <iostream>
 #include <fstream>
+#include <vector>
 
-// TODO:
-// PreInsertFunction
 
 #define UNREACHABLE std::cout << __FUNCTION__ << " " << __LINE__ << std::endl;\
                     throw std::runtime_error("Unreachable");
 
 
+static std::ofstream out;
+
+
 // --------------------------------------------------------------------------------------------------------------------
 // Class declarations
 // --------------------------------------------------------------------------------------------------------------------
+
 
 template <typename T> class Node;
 
@@ -26,6 +29,11 @@ class Tree
     std::pair<Node<T>*, Node<T>*> Split(T value);
     static Node<T>* Merge(Node<T>* less, Node<T>* bigger);
     void Delete(T value);
+    ~Tree() {
+        while (root_ != nullptr) {
+            Delete(root_->value_);
+        }
+    };
 };
 
 
@@ -50,25 +58,8 @@ class Node
     Node<T>* FindPreInsert(T value);
     Node<T>* FindMax();
 
-    void GraphVizPrint(std::ofstream& out, const std::string& color = "black") {
-        if (left_node_ != nullptr) {
-            out << value_ << " -> " << left_node_->value_ << " [color = " << color << "]" << std::endl;
-            left_node_->GraphVizPrint(out, color);
-        }
-        else {
-            out << value_ << " -> L_NULL" << value_ << " [color = " << color << "]"  << std::endl;
-        }
-
-        if (right_node_ != nullptr) {
-            out << value_ << " -> " << right_node_->value_  << " [color = " << color << "]" << std::endl;
-            right_node_->GraphVizPrint(out, color);
-        }
-        else {
-            out << value_ << " -> R_NULL" << value_ << " [color = " << color << "]"  << std::endl;
-        }
-    }
+    void GraphVizPrint(std::ofstream& out, const std::string& color = "default");
 };
-
 
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -108,8 +99,6 @@ std::pair<Node<T>*, Node<T>*> Tree<T>::Split(T value)
     Node<T>* pre_insert = root_->FindPreInsert(value);
     root_ = pre_insert->Splay();
 
-    std::cout << "New root: " << root_->value_ << std::endl;
-
     if (root_->value_ >= value) {
         Node<T>* less_tree = root_->left_node_;
         root_->left_node_ = nullptr;
@@ -138,20 +127,15 @@ template <typename T>
 Node<T>* Tree<T>::Merge(Node<T>* less, Node<T>* bigger)
 {
     if (less == nullptr) {
-        std::cout << "Empty less\n";
 
         if (bigger != nullptr) {
-            std::cout << "Bigger " << bigger->value_ << std::endl;
-        }
-        else {
-            std::cout << "Empty bigger\n";
+            bigger->predessor_node_ = nullptr;
         }
 
         return bigger;
     }
 
     Node<T>* max = less->FindMax();
-    std::cout << "Found max " << max->value_ << std::endl;
     Node<T>* new_root = max->Splay();
 
     if (new_root == nullptr) {
@@ -172,9 +156,10 @@ Node<T>* Tree<T>::Merge(Node<T>* less, Node<T>* bigger)
     }
 
     new_root->right_node_ = bigger;
-    bigger->predessor_node_ = new_root;
+    if (bigger != nullptr) {
+        bigger->predessor_node_ = new_root;
+    }
 
-    std::cout << "New root " << new_root->value_ << std::endl;
     return new_root;
 }
 
@@ -192,7 +177,6 @@ Node<T>* Node<T>::Find(T value)
             node = node->left_node_;
         }
         else {
-            std::cout << "Splaing " << node->value_ << std::endl;
             return node->Splay();
         }
     }
@@ -226,10 +210,6 @@ Node<T>* Node<T>::FindPreInsert(T value)
 template <typename T>
 Node<T>* Node<T>::FindMax()
 {
-    if (this == nullptr) {
-        return nullptr;
-    }
-
     Node<T>* node = this;
 
     while (node->right_node_ != nullptr) {
@@ -255,7 +235,12 @@ void Tree<T>::Delete(T value)
         std::runtime_error("Predessor of root is not nullptr");
     }
 
+    Node<T>* old_root = root_;
     root_ = Merge(root_->left_node_, root_->right_node_);
+
+    if (root_ == old_root) {
+        throw std::runtime_error("Element was not deleted");
+    }
 
     delete node;
 }
@@ -386,4 +371,36 @@ Node<T>* Node<T>::RightRotate()
     }
 
     return new_root;
+}
+
+template <typename T>
+void Node<T>::GraphVizPrint(std::ofstream& out, const std::string& color) {
+
+    static std::vector<std::string> colors = {"black", "red", "blue", "yellow", "green"};
+    std::string color_ = color;
+    static int i = 0;
+
+    if (color == "default") {
+        color_ = colors[i++];
+    }
+
+    if (left_node_ != nullptr) {
+        out << value_ << " -> " << left_node_->value_ << " [color = " << color_ << "]" << std::endl;
+        left_node_->GraphVizPrint(out, color_);
+    }
+    else {
+        out << value_ << " -> L_NULL" << value_ << " [color = " << color_ << "]"  << std::endl;
+    }
+
+    if (right_node_ != nullptr) {
+        out << value_ << " -> " << right_node_->value_  << " [color = " << color_ << "]" << std::endl;
+        right_node_->GraphVizPrint(out, color_);
+    }
+    else {
+        out << value_ << " -> R_NULL" << value_ << " [color = " << color_ << "]"  << std::endl;
+    }
+
+    if (predessor_node_ != nullptr) {
+        out << value_ << " -> " << predessor_node_->value_  << " [color = " << color_ << "]" << std::endl;
+    }
 }
