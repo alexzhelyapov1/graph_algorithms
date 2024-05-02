@@ -2,21 +2,26 @@
 #include <string>
 #include "SplayTree.h"
 
-template <typename T>
-class Test 
-{
-  public:
-    Test(T data) {
-        data_ = data;
-        std::cout << data_ << std::endl;
-    }
 
-  private:
-    std::string data_;
-};
 
 int main() {
-    std::cout << "Hello\n";
-    auto t = new Test<std::string>("hihihi");
-    // t->Print();
+    Node<int> a(6);
+    Node<int> b(5, &a);
+    Node<int> c(7, &a);
+    Node<int> d(8, &b);
+
+    a.RightRotate();
+
+    std::ofstream out("/home/alex/graph_algorithms/splay_tree/GV.txt");
+    if (!out.is_open()) {
+        throw std::runtime_error("ERROR! Can't open file\n");
+    }
+
+    out << "digraph graphname {\n";
+
+
+    b.GraphVizPrint(out);
+
+    out << "}";
+    out.close();
 }
