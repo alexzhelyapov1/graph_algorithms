@@ -1,9 +1,9 @@
 digraph graphname {
-6 -> 5
+8 -> 5
 5 -> L_NULL5
-5 -> 8
-8 -> L_NULL8
-8 -> R_NULL8
+5 -> R_NULL5
+8 -> 6
+6 -> L_NULL6
 6 -> 7
 7 -> L_NULL7
 7 -> R_NULL7

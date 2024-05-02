@@ -3,6 +3,7 @@
 #include <fstream>
 
 
+
 #define UNREACHABLE std::cout << __FUNCTION__ << " " << __LINE__ << std::endl;\
                     throw std::runtime_error("Unreachable");
 
@@ -20,7 +21,7 @@ class Tree
   public:
     Node<T>* root_ = nullptr;
 
-    // std::pair(Node<T>*, Node<T>*) Split(T value);
+    std::pair<Node<T>*, Node<T>*> Split(T value);
 
     void Insert(T value)
     {
@@ -36,15 +37,14 @@ class Tree
 };
 
 
-// template <typename T>
-// std::pair(Node<T>*, Node<T>*) Tree<T>Split(T value);
-// {
-//     if (root_ == nullptr) {
-//         return std::pair(nullptr, nullptr);
-//     }
-
-    
-// }
+template <typename T>
+std::pair<Node<T>*, Node<T>*> Tree<T>::Split(T value)
+{
+    if (root_ == nullptr) {
+        return std::pair(nullptr, nullptr);
+    }
+    return std::pair(nullptr, nullptr);
+}
 
 
 template <typename T>
@@ -236,34 +236,34 @@ Node<T>* Node<T>::LeftRotate()
     return new_root;
 }
 
-
 template <typename T>
 Node<T>* Node<T>::RightRotate()
 {
-    if (predessor_node_ == nullptr) {
+    if (left_node_ == nullptr) {
         return this;
     }
 
-    predessor_node_->left_node_ = right_node_;
-    right_node_ = predessor_node_;
+    Node<T>* root_left_right = left_node_->right_node_;
+    Node<T>* new_root = left_node_;
 
-    Node<T>* g_node = predessor_node_->predessor_node_;
+    new_root->right_node_ = this;
 
-    if (g_node != nullptr) {
-        if (g_node->right_node_ == predessor_node_) {
-            g_node->right_node_ = this;
+    if (predessor_node_ != nullptr) {
+        if (predessor_node_->left_node_ == this) {
+            predessor_node_->left_node_ = new_root;
         }
         else {
-            g_node->left_node_ = this;
+            predessor_node_->right_node_ = new_root;
         }
     }
 
-    if (right_node_ != nullptr) {
-        right_node_->predessor_node_ = predessor_node_;
+    new_root->predessor_node_ = predessor_node_;
+    predessor_node_ = new_root;
+    left_node_ = root_left_right;
+
+    if (left_node_ != nullptr) {
+        left_node_->predessor_node_ = this;
     }
 
-    predessor_node_->predessor_node_ = this;
-    predessor_node_ = g_node;
-
-    return this;
+    return new_root;
 }

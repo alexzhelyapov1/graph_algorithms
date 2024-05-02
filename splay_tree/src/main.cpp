@@ -11,7 +11,8 @@ int main() {
     Node<int> c(7, &a);
     Node<int> d(8, &b);
 
-    root = b.Splay();
+    // root = a.RightRotate();
+    root = d.Splay();
 
     std::ofstream out("/Users/alex_mac/Desktop/mipt/graph_algorithms/splay_tree/GV.txt");
     if (!out.is_open()) {
