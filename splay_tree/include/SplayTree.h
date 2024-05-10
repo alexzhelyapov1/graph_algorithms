@@ -23,17 +23,15 @@ template <typename T>
 class Tree
 {
   public:
-    Node<T>* root_ = nullptr;
 
-    void Insert(T value);
-    std::pair<Node<T>*, Node<T>*> Split(T value);
-    static Node<T>* Merge(Node<T>* less, Node<T>* bigger);
-    void Delete(T value);
-    ~Tree() {
-        while (root_ != nullptr) {
-            Delete(root_->value_);
-        }
-    };
+    void                            Insert(T value);
+    std::pair<Node<T>*, Node<T>*>   Split(T value);
+    static Node<T>*                 Merge(Node<T>* less, Node<T>* bigger);
+    void                            Delete(T value);
+
+    ~Tree();
+
+    Node<T>* root_ = nullptr;
 };
 
 
@@ -47,6 +45,7 @@ class Node
     Node<T>* left_node_ = nullptr;
     Node<T>* right_node_ = nullptr;
     Node<T>* predessor_node_ = nullptr;
+    
     Node(T value) : value_(value), predessor_node_(nullptr) {}
     Node(T value, Node<T>* predessor_ptr);
 
@@ -67,6 +66,7 @@ class Node
 // --------------------------------------------------------------------------------------------------------------------
 
 
+// Default insert + splay this node
 template <typename T>
 void Tree<T>::Insert(T value)
 {
@@ -89,6 +89,7 @@ void Tree<T>::Insert(T value)
 }
 
 
+// Find pre-insert, splay it, split from root
 template <typename T>
 std::pair<Node<T>*, Node<T>*> Tree<T>::Split(T value)
 {
@@ -126,33 +127,33 @@ std::pair<Node<T>*, Node<T>*> Tree<T>::Split(T value)
 template <typename T>
 Node<T>* Tree<T>::Merge(Node<T>* less, Node<T>* bigger)
 {
+    if (less != nullptr) {
+        less->predessor_node_ = nullptr;
+    }
+
+    if (bigger != nullptr) {
+        bigger->predessor_node_ = nullptr;
+    }
+
+
     if (less == nullptr) {
-
-        if (bigger != nullptr) {
-            bigger->predessor_node_ = nullptr;
-        }
-
         return bigger;
     }
 
-    Node<T>* max = less->FindMax();
-    Node<T>* new_root = max->Splay();
+
+    Node<T>* new_root = less->FindMax();
+
 
     if (new_root == nullptr) {
-        std::cout << "Warning. New root is nullptr in Merge";
-        return nullptr;
+        throw std::runtime_error("New root is nullptr in Merge");
     }
 
     if (new_root->predessor_node_ != nullptr) {
-        std::runtime_error("Predessor of root is not nullptr");
-    }
-
-    if (new_root != max) {
-        std::runtime_error("Max is not new root");
+        throw std::runtime_error("Predessor of root is not nullptr");
     }
 
     if (new_root->right_node_ != nullptr) {
-        std::runtime_error("Right node is not empty after splay of max element!");
+        throw std::runtime_error("Right node is not empty after splay of max element!");
     }
 
     new_root->right_node_ = bigger;
@@ -186,10 +187,11 @@ Node<T>* Node<T>::Find(T value)
 }
 
 
+// Find pre parent node for insert
 template <typename T>
 Node<T>* Node<T>::FindPreInsert(T value)
 {
-    Node<T>* pre_insert = nullptr;
+    Node<T>* pre_insert = this;
     Node<T>* insert = this;
 
     while (insert != nullptr) {
@@ -216,7 +218,7 @@ Node<T>* Node<T>::FindMax()
         node = node->right_node_;
     }
 
-    return node;
+    return node->Splay();
 }
 
 
@@ -236,6 +238,7 @@ void Tree<T>::Delete(T value)
     }
 
     Node<T>* old_root = root_;
+
     root_ = Merge(root_->left_node_, root_->right_node_);
 
     if (root_ == old_root) {
@@ -244,6 +247,15 @@ void Tree<T>::Delete(T value)
 
     delete node;
 }
+
+
+template <typename T>
+Tree<T>::~Tree()
+{
+    while (root_ != nullptr) {
+        Delete(root_->value_);
+    }
+};
 
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -376,7 +388,7 @@ Node<T>* Node<T>::RightRotate()
 template <typename T>
 void Node<T>::GraphVizPrint(std::ofstream& out, const std::string& color) {
 
-    static std::vector<std::string> colors = {"black", "red", "blue", "yellow", "green"};
+    static std::vector<std::string> colors = {"black", "red", "blue", "yellow", "green", "aqua", "cadetblue1", "chartreuse", "coral", "crimson", "cyan", "fuchsia", "pink"};
     std::string color_ = color;
     static int i = 0;
 

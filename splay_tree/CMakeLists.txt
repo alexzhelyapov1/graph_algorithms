@@ -11,3 +11,9 @@ file(GLOB SRC "src/*")
 
 add_executable(dev-test ${SRC})
 target_include_directories(dev-test PUBLIC "include")
+
+add_custom_target(graphviz
+    COMMAND dot -v -Tpng -o ${CMAKE_SOURCE_DIR}/gen/GV.png ${CMAKE_SOURCE_DIR}/gen/GV.txt
+    COMMAND code ${CMAKE_SOURCE_DIR}/gen/GV.png
+    SOURCES ${CMAKE_SOURCE_DIR}/gen/GV.txt
+)
